@@ -1,0 +1,17 @@
+[tool.poetry]
+name = "data-mangeling"
+version = "0.1.0"
+description = ""
+authors = ["Marcus Bitzl <marcus@bitzl.io>"]
+
+[tool.poetry.dependencies]
+python = "^3.8"
+click = "^7.1.2"
+tqdm = "^4.48.2"
+
+[tool.poetry.dev-dependencies]
+pytest = "^5.2"
+
+[build-system]
+requires = ["poetry>=0.12"]
+build-backend = "poetry.masonry.api"
