@@ -1,5 +1,5 @@
 [tool.poetry]
-name = "data-mangeling"
+name = "data-wrangling"
 version = "0.1.0"
 description = ""
 authors = ["Marcus Bitzl <marcus@bitzl.io>"]
