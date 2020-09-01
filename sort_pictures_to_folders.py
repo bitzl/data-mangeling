@@ -2,6 +2,8 @@ import click
 from pathlib import Path
 import shutil
 from tqdm import tqdm
+from tqdm.contrib.concurrent import thread_map
+from functools import partial
 
 GROUP_BY = 1000
 
@@ -22,14 +24,21 @@ def main(source_folder, target_folder):
         group_folder = target_folder / f"{i:03d}"
         group_folder.mkdir(exist_ok=True)
 
-    for source in tqdm(source_folder.iterdir(), total=total):
-        if not source.stem.isdecimal():
-            continue
-        number = int(source.stem)
-        group_folder = f"{number // GROUP_BY:03d}"
-        target = target_folder / group_folder / f"{number:0{digits}d}{source.suffix}"
+    thread_map(
+        partial(copy_and_rename, target_folder, digits),
+        source_folder.iterdir(),
+        total=total,
+    )
 
-        shutil.copy(source, target)
+
+def copy_and_rename(source: Path, target_folder: Path, digits: int):
+    if not source.stem.isdecimal():
+        return
+    number = int(source.stem)
+    group_folder = f"{number // GROUP_BY:03d}"
+    target = target_folder / group_folder / f"{number:0{digits}d}{source.suffix}"
+
+    shutil.copy(source, target)
 
 
 if __name__ == "__main__":
