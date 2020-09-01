@@ -25,7 +25,7 @@ def main(source_folder, target_folder):
         group_folder.mkdir(exist_ok=True)
 
     thread_map(
-        partial(copy_and_rename, target=target_folder, digits=digits),
+        partial(copy_and_rename, target_folder=target_folder, digits=digits),
         source_folder.iterdir(),
         total=total,
     )
