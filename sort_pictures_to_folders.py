@@ -3,7 +3,6 @@ from pathlib import Path
 import shutil
 from tqdm import tqdm
 from tqdm.contrib.concurrent import thread_map
-from functools import partial
 
 GROUP_BY = 1000
 
@@ -24,14 +23,11 @@ def main(source_folder, target_folder):
         group_folder = target_folder / f"{i:03d}"
         group_folder.mkdir(exist_ok=True)
 
-    thread_map(
-        partial(copy_and_rename, target_folder=target_folder, digits=digits),
-        source_folder.iterdir(),
-        total=total,
-    )
+    for source in tqdm(source_folder.iterdir(), total=total):
+        move_and_rename(source, target_folder, digits)
 
 
-def copy_and_rename(source: Path, target_folder: Path, digits: int):
+def move_and_rename(source: Path, target_folder: Path, digits: int):
     if not source.stem.isdecimal():
         return
     number = int(source.stem)
