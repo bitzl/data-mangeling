@@ -2,7 +2,8 @@ import click
 from pathlib import Path
 import shutil
 from tqdm import tqdm
-from tqdm.contrib.concurrent import thread_map
+
+from data_wrangling import parse_name_with_id
 
 GROUP_BY = 1000
 
@@ -28,11 +29,16 @@ def main(source_folder, target_folder):
 
 
 def move_and_rename(source: Path, target_folder: Path, digits: int):
-    if not source.stem.isdecimal():
+    prefix, identifier, suffix = parse_name_with_id(source.stem)
+    if identifier is None:
         return
     number = int(source.stem)
     group_folder = f"{number // GROUP_BY:03d}"
-    target = target_folder / group_folder / f"{number:0{digits}d}{source.suffix}"
+    target = (
+        target_folder
+        / group_folder
+        / f"{prefix}{number:0{digits}d}{suffix}{source.suffix}"
+    )
 
     shutil.copy(source, target)
 
