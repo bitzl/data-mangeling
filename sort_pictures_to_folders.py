@@ -19,8 +19,8 @@ def main(source_folder, target_folder, parallel):
     target_folder = Path(target_folder)
     target_folder.mkdir(parents=True)
 
-    total = sum(1 for p in source_folder.iterdir() if p.stem.isdecimal())
-    max_id = max(int(p.stem) for p in source_folder.iterdir() if p.stem.isdecimal())
+    total = sum(1 for p in source_folder.iterdir())
+    max_id = max(get_id_number(p.stem) for p in source_folder.iterdir())
     digits = len(str(max_id))
 
     for i in range(0, max_id // GROUP_BY + 1):
@@ -50,6 +50,13 @@ def copy_and_rename(source: Path, target_folder: Path, digits: int):
     )
 
     shutil.copy(source, target)
+
+
+def get_id_number(name: str) -> int:
+    _, id_number, __ = parse_name_with_id(name)
+    if id_number is None:
+        return -1
+    return id_number
 
 
 if __name__ == "__main__":
