@@ -39,15 +39,14 @@ def main(source_folder, target_folder, parallel):
 
 
 def copy_and_rename(source: Path, target_folder: Path, digits: int):
-    prefix, identifier, suffix = parse_name_with_id(source.stem)
-    if identifier is None:
+    prefix, id_number, suffix = parse_name_with_id(source.stem)
+    if id_number is None:
         return
-    number = int(source.stem)
-    group_folder = f"{number // GROUP_BY:03d}"
+    group_folder = f"{id_number // GROUP_BY:03d}"
     target = (
         target_folder
         / group_folder
-        / f"{prefix}{number:0{digits}d}{suffix}{source.suffix}"
+        / f"{prefix}{id_number:0{digits}d}{suffix}{source.suffix}"
     )
 
     shutil.copy(source, target)
