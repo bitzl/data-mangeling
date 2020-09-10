@@ -2,8 +2,10 @@ import click
 from pathlib import Path
 import shutil
 from tqdm import tqdm
+from tqdm.contrib.concurrent import process_map
 
 from data_wrangling import parse_name_with_id
+from functools import partial
 
 GROUP_BY = 1000
 
@@ -11,7 +13,8 @@ GROUP_BY = 1000
 @click.command()
 @click.argument("source_folder")
 @click.argument("target_folder")
-def main(source_folder, target_folder):
+@click.option("--parallel/--not-parallel", default=False)
+def main(source_folder, target_folder, parallel):
     source_folder = Path(source_folder)
     target_folder = Path(target_folder)
     target_folder.mkdir(parents=True)
@@ -24,11 +27,18 @@ def main(source_folder, target_folder):
         group_folder = target_folder / f"{i:03d}"
         group_folder.mkdir(exist_ok=True)
 
-    for source in tqdm(source_folder.iterdir(), total=total):
-        move_and_rename(source, target_folder, digits)
+    if parallel:
+        process_map(
+            partial(copy_and_rename, target_folder=target_folder, digits=digits),
+            source_folder.iterdir(),
+            total=total,
+        )
+    else:
+        for source in tqdm(source_folder.iterdir(), total=total):
+            copy_and_rename(source, target_folder, digits)
 
 
-def move_and_rename(source: Path, target_folder: Path, digits: int):
+def copy_and_rename(source: Path, target_folder: Path, digits: int):
     prefix, identifier, suffix = parse_name_with_id(source.stem)
     if identifier is None:
         return
