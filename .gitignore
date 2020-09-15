@@ -1,4 +1,5 @@
 data_wrangling.egg-info
+__pycache__/
 testdata
 testtarget
 .vscode
